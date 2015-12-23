@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf8" />
+         <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Day Twenty Three: dOUOb">
+    <meta name="author" content="Kabir Shah">
+        
+		<title>dOUOb: Day Twenty Three</title>
+        
+        <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+<link rel="shortcut icon" type="image/png" href="https://488j88gk.apps.lair.io/favicon.png"/>
+		<link rel="stylesheet" type="text/scss" href="main.scss" />
+        <link href="https://fonts.googleapis.com/css?family=Raleway:400,200,300,100|Open+Sans:300italic,400italic,600italic,700italic,400,700,600,300' rel='stylesheet' type='text/css">
+  <script type = "text/javascript" src="app.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://code.angularjs.org/1.2.6/angular.min.js"></script>
+<script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+<script src="https://cdn.firebase.com/libs/angularfire/0.5.0/angularfire.min.js"></script>
+	</head>
+	<body ng-controller="DemoCtrl" class="container"  ng-app="DemoApp">
+<h1>dOUOb</h1>
+<br>
+<h4>The many faces of doob.</h4>
+
+
+<main>
+  <p class="what">Look closely and you can see his two ears, two eyes, and nose.</p>
+  <h3>Create New Doob:</h3>  
+  <form name="myForm">
+
+       <div>
+           <input type="text"
+                  name="todoNameField"
+                  ng-model="todoName"
+                  placeholder="Put your dOUOb here..."
+                  required ng-minlength="3"
+                  class="form-control"
+                  ng-keyup="($event.keyCode == 13 && todoName.length > 2) ? addItem() : return"
+                  style="margin-bottom: 10px"
+                  />
+         <input type="text"
+                  name="todoDescriptionField"
+                  ng-model="todoDescription"
+                  placeholder="Description of doob"
+                  required ng-minlength="3"
+                  class="form-control"
+                  ng-keyup="($event.keyCode == 13 && todoName.length > 2) ? addItem() : return"
+                  style="margin-bottom: 10px"
+                  />
+
+           <button ng-click="addItem()"
+                           ng-hide="myForm.todoNameField.$invalid"
+                           class="btn btn-primary" type="button"
+                           >Save doob.</button>
+       </div>
+
+   </form>
+
+  <hr>
+
+
+  <!--TODO LIST-->
+  <div ng-repeat="item in todos" class="list-group-item row">
+    <span class="doob">{{item.name}} </span>     
+
+    <span class="description">{{item.description}} </span>
+
+   <a class="delete" ng-click="removeItem($index, item, $event)">
+      x
+    </a>
+
+  </div>
+</main>
+        <script>
+            var myApp = angular.module('DemoApp', ['firebase']);
+
+myApp.constant("FIREBASE_URL", "https://daytwentythree.firebaseio.com/" );
+
+
+function DemoCtrl($scope, $firebase, FIREBASE_URL) {
+
+    // Get Stored TODOs
+    var dOUOb = new Firebase(FIREBASE_URL);
+    $scope.todos = $firebase(dOUOb);
+
+
+
+
+    // Remove a Todo
+    $scope.removeItem   = function (index, item, event) {
+
+       // Avoid wrong removing
+       if (item.id == undefined)return;
+
+       // Firebase: Remove item from the list
+       $scope.todos.$remove(item.id);
+
+    };
+
+
+
+    // Add new TODO
+    $scope.addItem  = function () {
+
+        // Create a unique ID
+        var timestamp = new Date().valueOf();
+
+        // Get the Firebase reference of the item
+        var itemRef = new Firebase(FIREBASE_URL + timestamp);
+
+        $firebase(itemRef).$set({
+            id: timestamp,
+            name : $scope.todoName,
+            description: $scope.todoDescription
+        });
+
+        $scope.todoName = "";
+        $scope.todoDescription = "";
+
+    };
+
+
+}
+        </script>
+    </body>
+</html>
